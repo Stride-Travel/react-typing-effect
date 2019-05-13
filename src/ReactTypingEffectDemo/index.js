@@ -6,6 +6,7 @@ import "./styles/index.scss";
 
 const ReactTypingEffectDemo = () => {
   const test = () => {
+    // eslint-disable-next-line no-console
     console.log("Test is here.");
   };
 

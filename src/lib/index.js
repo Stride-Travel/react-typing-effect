@@ -13,7 +13,6 @@ export default class TypingEffect extends Component {
     };
     this.getRawText = this.getRawText.bind(this);
     this.type = this.type.bind(this);
-    this.erase = this.erase.bind(this);
     this.startTyping = this.startTyping.bind(this);
   }
 
@@ -48,30 +47,8 @@ export default class TypingEffect extends Component {
       });
     } else {
       this._timeout = setTimeout(() => {
-        // this.erase();
         this.props.callBack && this.props.callBack();
       }, this.props.delayTime);
-    }
-  }
-
-  erase() {
-    let { index, displayText } = this.state;
-    if (displayText.length === 0) {
-      const textArray = this.getRawText();
-      index = index + 1 === textArray.length ? 0 : index + 1;
-      this.setState({ index }, () => {
-        this.startTyping();
-      });
-    } else {
-      displayText = displayText.substr(
-        -displayText.length,
-        displayText.length - 1
-      );
-      this.setState({ displayText }, () => {
-        this._timeout = setTimeout(() => {
-          this.erase();
-        }, this.props.speed);
-      });
     }
   }
 
