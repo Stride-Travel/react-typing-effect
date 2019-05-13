@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import cx from 'classnames';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import cx from "classnames";
 
-import Cursor from './Cursor';
+import Cursor from "./Cursor";
 
 export default class TypingEffect extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -40,8 +39,8 @@ export default class TypingEffect extends Component {
   type() {
     let { index, displayText } = this.state;
     let text = this.getRawText()[index];
-    if(text.length > displayText.length) {
-      displayText = text.substr(0, displayText.length+1);
+    if (text.length > displayText.length) {
+      displayText = text.substr(0, displayText.length + 1);
       this.setState({ displayText }, () => {
         this._timeout = setTimeout(() => {
           this.type();
@@ -49,8 +48,9 @@ export default class TypingEffect extends Component {
       });
     } else {
       this._timeout = setTimeout(() => {
-        this.erase();
-      }, this.props.eraseDelay);
+        // this.erase();
+        this.props.callBack && this.props.callBack();
+      }, this.props.delayTime);
     }
   }
 
@@ -58,12 +58,15 @@ export default class TypingEffect extends Component {
     let { index, displayText } = this.state;
     if (displayText.length === 0) {
       const textArray = this.getRawText();
-      index = (index+1) === textArray.length ? 0 : index+1;
+      index = index + 1 === textArray.length ? 0 : index + 1;
       this.setState({ index }, () => {
         this.startTyping();
       });
     } else {
-      displayText = displayText.substr(-displayText.length, (displayText.length-1));
+      displayText = displayText.substr(
+        -displayText.length,
+        displayText.length - 1
+      );
       this.setState({ displayText }, () => {
         this._timeout = setTimeout(() => {
           this.erase();
@@ -76,29 +79,28 @@ export default class TypingEffect extends Component {
     const {
       speed,
       typingDelay,
-      eraseDelay,
+      delayTime,
       staticText,
       text,
       className,
       cursor,
       cursorClassName,
+      callBack,
       ...otherProps
     } = this.props;
     const { displayText } = this.state;
-    const classes = cx(className, 'lfm__typing_effect');
+    const classes = cx(className, "lfm__typing_effect");
     return (
       <div {...otherProps} className={classes}>
-        {staticText ?
+        {staticText ? (
           <span className="lfm__typing_effect_static_text">
             {staticText}&nbsp;
-          </span> : null}
+          </span>
+        ) : null}
 
         <span className="lfm__typing_effect_text">{displayText}</span>
 
-        <Cursor
-          cursor={cursor}
-          cursorClassName={cursorClassName}
-        />
+        <Cursor cursor={cursor} cursorClassName={cursorClassName} />
       </div>
     );
   }
@@ -106,17 +108,18 @@ export default class TypingEffect extends Component {
 
 TypingEffect.defaultProps = {
   speed: 200,
-  eraseDelay: 5000,
+  delayTime: 5000,
   typingDelay: 2500
 };
 
 TypingEffect.propTypes = {
   speed: PropTypes.number.isRequired,
   typingDelay: PropTypes.number.isRequired,
-  eraseDelay: PropTypes.number.isRequired,
+  delayTime: PropTypes.number.isRequired,
   staticText: PropTypes.string,
   text: PropTypes.oneOfType([PropTypes.array, PropTypes.string]).isRequired,
   className: PropTypes.string,
   cursor: PropTypes.string,
-  cursorClassName: PropTypes.string
+  cursorClassName: PropTypes.string,
+  callBack: PropTypes.func
 };
